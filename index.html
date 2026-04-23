@@ -62,6 +62,20 @@
 
     }
 
+    .builder-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 520px) minmax(320px, 420px);
+      gap: 28px;
+      align-items: start;
+      justify-content: center;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .preview-card-wrap {
+      width: 100%;
+    }
+
     .builder-preview {
       width: 100%;
       margin-top: 8px;
@@ -372,10 +386,11 @@
       min-height: 16px;
     }
 
-    @media (max-width: 480px) {
-      body {
-        padding: 6px;
+    @media (max-width: 900px) {
+      .builder-shell {
+        grid-template-columns: 1fr;
       }
+    }
 
       .card {
         padding: 14px 10px 16px;
@@ -449,40 +464,52 @@
   </style>
 </head>
 <body>
-  <div class="card builder-card" id="builderCard">
-    <h1 class="builder-title">Erstelle deinen Timer</h1>
-    <p class="builder-subtitle">Titel und Startzeit eingeben. Danach den fertigen Link kopieren und in Notion per <strong>/embed</strong> einfügen.</p>
+  <div class="builder-shell">
 
-  <div class="builder-grid compact">
-    <div class="field-group title-field">
-      <label class="field-label" for="builderTitle">Titel</label>
-      <input class="field-input" id="builderTitle" type="text" placeholder="z. B. Atemübung" maxlength="60" />
-    </div>
+    <!-- LEFT: Builder -->
+    <div class="card builder-card" id="builderCard">
+      <h1 class="builder-title">Erstelle deinen Timer</h1>
 
-    <div class="field-group minutes-field">
-      <label class="field-label" for="builderMinutes">Startzeit in Minuten</label>
-      <input class="field-input" id="builderMinutes" type="number" min="1" max="180" step="1" value="10" />
-    </div>
-  </div>
+      <p class="builder-subtitle">
+        Titel und Startzeit eingeben. Danach den fertigen Link kopieren
+        und in Notion per <strong>/embed</strong> einfügen.
+      </p>
 
-    <div class="result-layout">
-      <div class="result-box" id="resultBox">
-    </div>
+      <div class="builder-grid compact">
+        <div class="field-group title-field">
+          <label class="field-label" for="builderTitle">Titel</label>
+          <input class="field-input" id="builderTitle" type="text" placeholder="z. B. Atemübung" maxlength="60" />
+        </div>
 
-    <div class="builder-preview">
-      <iframe id="livePreview" class="preview-frame"></iframe>
-    </div>
+        <div class="field-group minutes-field">
+          <label class="field-label" for="builderMinutes">Startzeit in Minuten</label>
+          <input class="field-input" id="builderMinutes" type="number" min="1" max="180" step="1" value="10" />
+        </div>
+      </div>
 
-      <div class="builder-actions side">
-        <button class="builder-button" id="copyBtn" type="button">Link kopieren</button>
+      <div class="result-layout">
+        <div class="result-box" id="resultBox"></div>
+
+        <div class="builder-actions side">
+          <button class="builder-button" id="copyBtn" type="button">Link kopieren</button>
+        </div>
+      </div>
+
+      <div class="result-hint">
+        Tipp: Diesen Link kannst du speichern und immer wieder in deine Notion-Vorlagen einsetzen.
       </div>
     </div>
-    
-    
-<div class="result-hint">Tipp: Diesen Link kannst du speichern und immer wieder in deine Notion-Vorlagen einsetzen.</div>
+
+    <!-- RIGHT: Preview -->
+    <div class="preview-card-wrap">
+      <div class="card" id="timerCard">
+        <div class="timer-title" id="titleDisplay"></div>
+
+        <!-- HIER bleibt dein kompletter Timer-Code drin -->
+      </div>
     </div>
-  <div class="card hidden" id="timerCard">
-    <div class="timer-title" id="titleDisplay"></div>
+
+  </div>
 
     <div class="circle-wrap" aria-live="polite">
       <svg class="circle-svg" viewBox="0 0 100 100" aria-hidden="true">
@@ -544,7 +571,6 @@
     const builderTitle = document.getElementById('builderTitle');
     const builderMinutes = document.getElementById('builderMinutes');
     const resultBox = document.getElementById('resultBox');
-    const livePreview = document.getElementById('livePreview');
     const copyBtn = document.getElementById('copyBtn');
     
     builderTitle.addEventListener('input', refreshResult);
@@ -567,8 +593,12 @@
       const url = buildTimerUrl();
       resultBox.textContent = url;
 
-      if (livePreview) {
-        livePreview.src = url;
+      if (!isRunning) {
+        totalSeconds = getPreviewMinutes() * 60;
+        remainingSeconds = totalSeconds;
+        render();
+      } else {
+        titleDisplay.textContent = getPreviewTitle();
       }
     }
 
@@ -590,21 +620,21 @@
 
     if (!hasTimerParams) {
       builderCard.classList.remove('hidden');
-      timerCard.classList.add('hidden');
-      refreshResult();
+      timerCard.classList.remove('hidden');
     } else {
       builderCard.classList.add('hidden');
       timerCard.classList.remove('hidden');
 
-      const config = {
-        minMinutes: Math.max(1, parseInt(params.get('min') || '1', 10)),
-        defaultMinutes: Math.max(1, parseInt(params.get('minutes') || '10', 10)),
-        tickMs: 250,
-        audioSrc: params.get('audio') || 'bell.mp3',
-        autoplayBell: params.get('bell') !== 'off'
-      };
+    const config = {
+      minMinutes: Math.max(1, parseInt(params.get('min') || '1', 10)),
+      maxMinutes: 180,
+      defaultMinutes: Math.max(1, parseInt(params.get('minutes') || '10', 10)),
+      tickMs: 250,
+      audioSrc: params.get('audio') || 'bell.mp3',
+      autoplayBell: params.get('bell') !== 'off'
+    };
 
-      config.defaultMinutes = Math.max(config.minMinutes, config.defaultMinutes);
+    config.defaultMinutes = Math.min(config.maxMinutes, Math.max(config.minMinutes, config.defaultMinutes));
       
       const titleDisplay = document.getElementById('titleDisplay');
       const timeDisplay = document.getElementById('timeDisplay');
@@ -624,15 +654,23 @@
       const circumference = 2 * Math.PI * radius;
       progressCircle.style.strokeDasharray = `${circumference}`;
 
-      let totalSeconds = config.defaultMinutes * 60;
-      let remainingSeconds = totalSeconds;
+    function getPreviewMinutes() {
+      if (hasTimerParams) {
+        return Math.max(1, parseInt(params.get('minutes') || '10', 10));
+      }
+      return Math.max(1, parseInt(builderMinutes.value || '10', 10));
+    }
       let isRunning = false;
       let intervalId = null;
       let endTime = null;
       let audioUnlocked = false;
 
-      titleDisplay.textContent = (params.get('title') || '').trim() || 'Timer';
-
+    function getPreviewTitle() {
+      if (hasTimerParams) {
+        return (params.get('title') || '').trim() || 'Timer';
+      }
+      return (builderTitle.value || '').trim() || 'Timer';
+    }
       if (config.audioSrc) {
         bellAudio.src = config.audioSrc;
         bellAudio.load();
@@ -684,6 +722,7 @@
 
       function render() {
         timeDisplay.textContent = formatTime(remainingSeconds);
+        titleDisplay.textContent = getPreviewTitle();
         updateProgress();
         updateMinutesLabel();
         if (isRunning) {
