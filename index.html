@@ -125,8 +125,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 16px;
       width: 100%;
+      flex-wrap: nowrap;
     }
 
     .minutes-label {
@@ -240,11 +241,15 @@
       }
 
       .minutes-row {
-        gap: 18px;
+        gap: 10px;
       }
 
       .minutes-label {
-        min-width: 92px;
+        min-width: 82px;
+      }
+
+      .title-input {
+        width: 100%;
       }
     }
   </style>
@@ -252,6 +257,7 @@
 <body>
   <div class="widget">
     <input class="title-input" id="titleInput" type="text" placeholder="Titel eingeben" maxlength="60" aria-label="Timer-Titel" />
+
     <div class="circle-wrap" aria-live="polite">
       <svg viewBox="0 0 100 100" aria-hidden="true">
         <circle class="track" cx="50" cy="50" r="44"></circle>
@@ -311,8 +317,7 @@
       maxMinutes: Math.max(5, parseInt(params.get('max') || '60', 10)),
       defaultMinutes: Math.max(5, parseInt(params.get('minutes') || '10', 10)),
       tickMs: 250,
-      // Wenn keine Audio-URL übergeben wird, wird standardmäßig eine lokale Datei verwendet
-      audioSrc: params.get('audio') || 'bell.wav',
+      audioSrc: params.get('audio') || 'bell.mp3',
       autoplayBell: params.get('bell') !== 'off'
     };
 
@@ -331,7 +336,6 @@
     const increaseSmallBtn = document.getElementById('increaseSmallBtn');
     const startPauseBtn = document.getElementById('startPauseBtn');
     const resetBtn = document.getElementById('resetBtn');
-    const startPauseIcon = document.getElementById('startPauseIcon');
     const progressCircle = document.querySelector('.progress');
     const bellAudio = document.getElementById('bellAudio');
     const footerNote = document.getElementById('footerNote');
@@ -350,7 +354,7 @@
       bellAudio.src = config.audioSrc;
       footerNote.textContent = '';
     } else {
-      footerNote.textContent = 'Kein Klang hinterlegt. Füge ?audio=DEINE-DATEI.mp3 an die URL an.';
+      footerNote.textContent = 'Kein Klang hinterlegt.';
     }
 
     function formatTime(seconds) {
@@ -375,10 +379,12 @@
       minutesLabel.textContent = `${currentMinutes} min`;
       const disabled = isRunning;
       minutesLabel.classList.toggle('disabled', disabled);
+
       decreaseSmallBtn.disabled = disabled || currentMinutes <= config.minMinutes;
       decreaseBtn.disabled = disabled || currentMinutes <= 5;
       increaseBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
       increaseSmallBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
+
       decreaseSmallBtn.classList.toggle('disabled', decreaseSmallBtn.disabled);
       decreaseBtn.classList.toggle('disabled', decreaseBtn.disabled);
       increaseBtn.classList.toggle('disabled', increaseBtn.disabled);
