@@ -110,13 +110,15 @@
     .time {
       position: relative;
       z-index: 1;
-      font-size: clamp(56px, 11vw, 88px);
-      line-height: 0.95;
+      font-size: clamp(42px, 10vw, 88px);
+      line-height: 1;
       font-weight: 500;
       letter-spacing: -0.04em;
       text-align: center;
-      max-width: 72%;
+      max-width: 65%;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .minutes-row {
@@ -169,6 +171,14 @@
       border-color: #c9c9c9;
     }
 
+    .icon-button.tiny {
+      width: 50px;
+      height: 42px;
+      border-radius: 12px;
+      color: #2a2a2a;
+      border-color: #d4d4d4;
+    }
+
     .icon-button:hover:not(:disabled) {
       background: var(--hover);
     }
@@ -191,6 +201,11 @@
     .icon-button.small svg {
       width: 40%;
       height: 40%;
+    }
+
+    .icon-button.tiny svg {
+      width: 36%;
+      height: 36%;
     }
 
     .button-icon-img {
@@ -246,7 +261,13 @@
     </div>
 
     <div class="minutes-row">
-      <button class="icon-button small" id="decreaseBtn" type="button" aria-label="1 Minute weniger">
+      <button class="icon-button tiny" id="decreaseSmallBtn" type="button" aria-label="1 Minute weniger">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <button class="icon-button small" id="decreaseBtn" type="button" aria-label="5 Minuten weniger">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         </svg>
@@ -254,7 +275,13 @@
 
       <div class="minutes-label" id="minutesLabel">10 min</div>
 
-      <button class="icon-button small" id="increaseBtn" type="button" aria-label="1 Minute mehr">
+      <button class="icon-button small" id="increaseBtn" type="button" aria-label="5 Minuten mehr">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <button class="icon-button tiny" id="increaseSmallBtn" type="button" aria-label="1 Minute mehr">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         </svg>
@@ -298,8 +325,10 @@
     const titleInput = document.getElementById('titleInput');
     const startPauseImg = document.getElementById('startPauseImg');
     const minutesLabel = document.getElementById('minutesLabel');
+    const decreaseSmallBtn = document.getElementById('decreaseSmallBtn');
     const decreaseBtn = document.getElementById('decreaseBtn');
     const increaseBtn = document.getElementById('increaseBtn');
+    const increaseSmallBtn = document.getElementById('increaseSmallBtn');
     const startPauseBtn = document.getElementById('startPauseBtn');
     const resetBtn = document.getElementById('resetBtn');
     const startPauseIcon = document.getElementById('startPauseIcon');
@@ -346,10 +375,14 @@
       minutesLabel.textContent = `${currentMinutes} min`;
       const disabled = isRunning;
       minutesLabel.classList.toggle('disabled', disabled);
+      decreaseSmallBtn.disabled = disabled || currentMinutes <= config.minMinutes;
       decreaseBtn.disabled = disabled || currentMinutes <= config.minMinutes;
       increaseBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
+      increaseSmallBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
+      decreaseSmallBtn.classList.toggle('disabled', decreaseSmallBtn.disabled);
       decreaseBtn.classList.toggle('disabled', decreaseBtn.disabled);
       increaseBtn.classList.toggle('disabled', increaseBtn.disabled);
+      increaseSmallBtn.classList.toggle('disabled', increaseSmallBtn.disabled);
     }
 
     function setPlayIcon() {
@@ -450,8 +483,10 @@
 
     startPauseBtn.addEventListener('click', toggleTimer);
     resetBtn.addEventListener('click', resetTimer);
+    decreaseSmallBtn.addEventListener('click', () => changeMinutes(-1));
     decreaseBtn.addEventListener('click', () => changeMinutes(-5));
     increaseBtn.addEventListener('click', () => changeMinutes(5));
+    increaseSmallBtn.addEventListener('click', () => changeMinutes(1));
 
     document.addEventListener('visibilitychange', () => {
       if (!isRunning || !endTime) return;
