@@ -621,7 +621,8 @@
     } else {
       builderCard.classList.add('hidden');
       timerCard.classList.remove('hidden');
-
+    }
+    
     const config = {
       minMinutes: Math.max(1, parseInt(params.get('min') || '1', 10)),
       maxMinutes: 180,
@@ -650,6 +651,13 @@
       const radius = 44;
       const circumference = 2 * Math.PI * radius;
       progressCircle.style.strokeDasharray = `${circumference}`;
+
+    let totalSeconds = getPreviewMinutes() * 60;
+    let remainingSeconds = totalSeconds;
+    let isRunning = false;
+    let intervalId = null;
+    let endTime = null;
+    let audioUnlocked = false;
 
     function getPreviewMinutes() {
       if (hasTimerParams) {
