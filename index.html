@@ -3,27 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <title>Notion Timer Widget</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
   <style>
     :root {
       --accent: #204ff5;
       --hover: #c0deff;
-      --bg: #f7f7f7;
       --card: #f4f4f4;
       --border: #d8d8d8;
       --text: #111111;
       --muted: #a7a7a7;
-      --shadow: 0 1px 0 rgba(0,0,0,0.03);
-      --radius: 24px;
+      --shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
       --btn-radius: 18px;
-      --circle-size: min(58vw, 360px);
       --stroke: 10;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       background: transparent;
@@ -64,7 +65,10 @@
       color: var(--text);
       text-align: center;
       outline: none;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+      transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        background-color 0.18s ease;
     }
 
     .title-input::placeholder {
@@ -74,7 +78,7 @@
     .title-input:hover,
     .title-input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(32, 79, 245, 0.10);
+      box-shadow: 0 0 0 3px rgba(32, 79, 245, 0.1);
       background: #fff;
     }
 
@@ -87,7 +91,7 @@
       flex: 0 0 auto;
     }
 
-    svg {
+    .circle-svg {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -165,9 +169,13 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: background-color 0.18s ease, transform 0.08s ease, border-color 0.18s ease;
+      transition:
+        background-color 0.18s ease,
+        transform 0.08s ease,
+        border-color 0.18s ease;
       color: var(--accent);
       flex: 0 0 auto;
+      padding: 0;
     }
 
     .icon-button.small {
@@ -176,7 +184,6 @@
       border-radius: 16px;
       color: #2a2a2a;
       border-color: #c9c9c9;
-      flex: 0 0 auto;
     }
 
     .icon-button.tiny {
@@ -185,7 +192,6 @@
       border-radius: 12px;
       color: #2a2a2a;
       border-color: #d4d4d4;
-      flex: 0 0 auto;
     }
 
     .icon-button:hover:not(:disabled) {
@@ -201,15 +207,9 @@
     }
 
     .icon-button svg {
-      position: static;
       width: 40%;
       height: 40%;
-      transform: none;
-    }
-
-    .icon-button.small svg {
-      width: 40%;
-      height: 40%;
+      display: block;
     }
 
     .icon-button.tiny svg {
@@ -292,10 +292,17 @@
 </head>
 <body>
   <div class="widget">
-    <input class="title-input" id="titleInput" type="text" placeholder="Titel eingeben" maxlength="60" aria-label="Timer-Titel" />
+    <input
+      class="title-input"
+      id="titleInput"
+      type="text"
+      placeholder="Titel eingeben"
+      maxlength="60"
+      aria-label="Timer-Titel"
+    />
 
     <div class="circle-wrap" aria-live="polite">
-      <svg viewBox="0 0 100 100" aria-hidden="true">
+      <svg class="circle-svg" viewBox="0 0 100 100" aria-hidden="true">
         <circle class="track" cx="50" cy="50" r="44"></circle>
         <circle class="progress" cx="50" cy="50" r="44"></circle>
       </svg>
@@ -305,13 +312,13 @@
     <div class="minutes-row">
       <button class="icon-button tiny" id="decreaseSmallBtn" type="button" aria-label="1 Minute weniger">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
         </svg>
       </button>
 
       <button class="icon-button small" id="decreaseBtn" type="button" aria-label="5 Minuten weniger">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
         </svg>
       </button>
 
@@ -319,13 +326,13 @@
 
       <button class="icon-button small" id="increaseBtn" type="button" aria-label="5 Minuten mehr">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
         </svg>
       </button>
 
       <button class="icon-button tiny" id="increaseSmallBtn" type="button" aria-label="1 Minute mehr">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
         </svg>
       </button>
     </div>
