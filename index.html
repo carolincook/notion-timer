@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notion Timer Widget</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --accent: #204ff5;
@@ -13,7 +12,7 @@
       --card: #f4f4f4;
       --border: #d8d8d8;
       --text: #111111;
-      --muted: #a7a7a7;
+      --muted: #8f8f8f;
       --shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
       --btn-radius: 18px;
       --stroke: 10;
@@ -23,21 +22,23 @@
       box-sizing: border-box;
     }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       background: transparent;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      overflow: hidden;
+      color: var(--text);
     }
 
     body {
-      display: block;
       padding: 8px;
     }
 
-    .widget {
+    .hidden {
+      display: none !important;
+    }
+
+    .card {
       width: 100%;
       max-width: 420px;
       margin: 0 auto;
@@ -50,36 +51,147 @@
       flex-direction: column;
       align-items: center;
       gap: 18px;
-      user-select: none;
       overflow: hidden;
     }
 
-    .title-input {
+    .builder-card {
+      max-width: 520px;
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    .builder-title {
+      font-size: 28px;
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      margin: 0;
+      text-align: left;
+    }
+
+    .builder-subtitle {
+      margin: -4px 0 4px;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .field-label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .field-input,
+    .field-select {
       width: 100%;
       border: 1px solid #d1d1d1;
       background: #ffffff;
       border-radius: 14px;
-      padding: 10px 14px;
+      padding: 12px 14px;
       font-size: 16px;
       line-height: 1.2;
       color: var(--text);
-      text-align: center;
       outline: none;
-      transition:
-        border-color 0.18s ease,
-        box-shadow 0.18s ease,
-        background-color 0.18s ease;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+      font-family: inherit;
     }
 
-    .title-input::placeholder {
-      color: #9a9a9a;
-    }
-
-    .title-input:hover,
-    .title-input:focus {
+    .field-input:hover,
+    .field-input:focus,
+    .field-select:hover,
+    .field-select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(32, 79, 245, 0.1);
       background: #fff;
+    }
+
+    .builder-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .builder-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .builder-button {
+      min-height: 50px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: 1px solid #bcbcbc;
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.18s ease, transform 0.08s ease, border-color 0.18s ease;
+    }
+
+    .builder-button:hover {
+      background: var(--hover);
+    }
+
+    .builder-button:active {
+      transform: translateY(1px);
+    }
+
+    .builder-button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .builder-button.primary:hover {
+      background: #1743da;
+      border-color: #1743da;
+    }
+
+    .result-box {
+      width: 100%;
+      min-height: 88px;
+      border: 1px solid #d9d9d9;
+      border-radius: 16px;
+      background: #fff;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .result-hint {
+      font-size: 12px;
+      color: #6f6f6f;
+      margin-top: -6px;
+    }
+
+    .timer-title {
+      width: 100%;
+      min-height: 62px;
+      border: 1px solid #d1d1d1;
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: clamp(24px, 5vw, 32px);
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--text);
     }
 
     .circle-wrap {
@@ -113,11 +225,11 @@
       stroke-linecap: round;
       transition: stroke-dashoffset 0.95s linear;
     }
-    
+
     .time {
       position: relative;
       z-index: 1;
-      font-size: clamp(32px, 9vw, 72px);
+      font-size: clamp(28px, 8vw, 68px);
       line-height: 1;
       font-weight: 500;
       letter-spacing: -0.04em;
@@ -167,10 +279,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition:
-        background-color 0.18s ease,
-        transform 0.08s ease,
-        border-color 0.18s ease;
+      transition: background-color 0.18s ease, transform 0.08s ease, border-color 0.18s ease;
       color: var(--accent);
       flex: 0 0 auto;
       padding: 0;
@@ -237,15 +346,23 @@
         padding: 6px;
       }
 
-      .widget {
+      .card {
         padding: 14px 10px 16px;
         gap: 14px;
         border-radius: 22px;
       }
 
-      .title-input {
-        font-size: 15px;
-        padding: 9px 12px;
+      .builder-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .builder-title {
+        font-size: 24px;
+      }
+
+      .timer-title {
+        min-height: 54px;
+        font-size: clamp(21px, 5vw, 28px);
       }
 
       .circle-wrap {
@@ -254,8 +371,7 @@
       }
 
       .time {
-        font-size: clamp(28px, 8vw, 56px);
-        max-width: 60%;
+        font-size: clamp(24px, 7.5vw, 54px);
       }
 
       .minutes-row {
@@ -289,15 +405,39 @@
   </style>
 </head>
 <body>
-  <div class="widget">
-    <input
-      class="title-input"
-      id="titleInput"
-      type="text"
-      placeholder="Titel eingeben"
-      maxlength="60"
-      aria-label="Timer-Titel"
-    />
+  <div class="card builder-card" id="builderCard">
+    <h1 class="builder-title">Timer-Link erstellen</h1>
+    <p class="builder-subtitle">Titel und Startzeit eingeben. Danach den fertigen Link kopieren und in Notion per <strong>/embed</strong> einfügen.</p>
+
+    <div class="field-group">
+      <label class="field-label" for="builderTitle">Titel</label>
+      <input class="field-input" id="builderTitle" type="text" placeholder="z. B. Atemübung" maxlength="60" />
+    </div>
+
+    <div class="builder-grid">
+      <div class="field-group">
+        <label class="field-label" for="builderMinutes">Startzeit in Minuten</label>
+        <input class="field-input" id="builderMinutes" type="number" min="1" max="60" step="1" value="10" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="builderMax">Maximale Minuten</label>
+        <input class="field-input" id="builderMax" type="number" min="5" max="180" step="1" value="60" />
+      </div>
+    </div>
+
+    <div class="builder-actions">
+      <button class="builder-button primary" id="generateBtn" type="button">Link erzeugen</button>
+      <button class="builder-button" id="copyBtn" type="button">Link kopieren</button>
+      <button class="builder-button" id="previewBtn" type="button">Vorschau öffnen</button>
+    </div>
+
+    <div class="result-box" id="resultBox"></div>
+    <div class="result-hint">Tipp: Diesen Link kannst du speichern und immer wieder in deine Notion-Vorlagen einsetzen.</div>
+  </div>
+
+  <div class="card hidden" id="timerCard">
+    <div class="timer-title" id="titleDisplay"></div>
 
     <div class="circle-wrap" aria-live="polite">
       <svg class="circle-svg" viewBox="0 0 100 100" aria-hidden="true">
@@ -352,229 +492,283 @@
 
   <script>
     const params = new URLSearchParams(window.location.search);
+    const hasTimerParams = params.has('title') || params.has('minutes');
 
-    const config = {
-      minMinutes: Math.max(1, parseInt(params.get('min') || '1', 10)),
-      maxMinutes: Math.max(5, parseInt(params.get('max') || '60', 10)),
-      defaultMinutes: Math.max(5, parseInt(params.get('minutes') || '10', 10)),
-      tickMs: 250,
-      audioSrc: params.get('audio') || 'bell.mp3',
-      autoplayBell: params.get('bell') !== 'off'
-    };
+    const builderCard = document.getElementById('builderCard');
+    const timerCard = document.getElementById('timerCard');
+    const builderTitle = document.getElementById('builderTitle');
+    const builderMinutes = document.getElementById('builderMinutes');
+    const builderMax = document.getElementById('builderMax');
+    const resultBox = document.getElementById('resultBox');
+    const generateBtn = document.getElementById('generateBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const previewBtn = document.getElementById('previewBtn');
 
-    config.defaultMinutes = Math.min(config.maxMinutes, Math.max(config.minMinutes, config.defaultMinutes));
-    config.defaultMinutes = Math.round(config.defaultMinutes / 5) * 5;
-    if (config.defaultMinutes < config.minMinutes) config.defaultMinutes = config.minMinutes;
-    if (config.defaultMinutes > config.maxMinutes) config.defaultMinutes = config.maxMinutes;
+    function baseUrl() {
+      return `${window.location.origin}${window.location.pathname}`;
+    }
 
-    const timeDisplay = document.getElementById('timeDisplay');
-    const titleInput = document.getElementById('titleInput');
-    const startPauseImg = document.getElementById('startPauseImg');
-    const minutesLabel = document.getElementById('minutesLabel');
-    const decreaseSmallBtn = document.getElementById('decreaseSmallBtn');
-    const decreaseBtn = document.getElementById('decreaseBtn');
-    const increaseBtn = document.getElementById('increaseBtn');
-    const increaseSmallBtn = document.getElementById('increaseSmallBtn');
-    const startPauseBtn = document.getElementById('startPauseBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const progressCircle = document.querySelector('.progress');
-    const bellAudio = document.getElementById('bellAudio');
-    const footerNote = document.getElementById('footerNote');
+    function buildTimerUrl() {
+      const title = (builderTitle.value || '').trim();
+      const minutes = Math.max(1, parseInt(builderMinutes.value || '10', 10));
+      const max = Math.max(5, parseInt(builderMax.value || '60', 10));
+      const url = new URL(baseUrl());
+      if (title) url.searchParams.set('title', title);
+      url.searchParams.set('minutes', String(minutes));
+      url.searchParams.set('max', String(max));
+      return url.toString();
+    }
 
-    const radius = 44;
-    const circumference = 2 * Math.PI * radius;
-    progressCircle.style.strokeDasharray = `${circumference}`;
+    function refreshResult() {
+      resultBox.textContent = buildTimerUrl();
+    }
 
-    let totalSeconds = config.defaultMinutes * 60;
-    let remainingSeconds = totalSeconds;
-    let isRunning = false;
-    let intervalId = null;
-    let endTime = null;
-    let audioUnlocked = false;
+    generateBtn.addEventListener('click', refreshResult);
+    copyBtn.addEventListener('click', async () => {
+      refreshResult();
+      try {
+        await navigator.clipboard.writeText(resultBox.textContent);
+        copyBtn.textContent = 'Kopiert';
+        setTimeout(() => {
+          copyBtn.textContent = 'Link kopieren';
+        }, 1400);
+      } catch (error) {
+        copyBtn.textContent = 'Bitte manuell kopieren';
+        setTimeout(() => {
+          copyBtn.textContent = 'Link kopieren';
+        }, 1600);
+      }
+    });
 
-    if (config.audioSrc) {
-      bellAudio.src = config.audioSrc;
-      bellAudio.load();
-      footerNote.textContent = '';
+    previewBtn.addEventListener('click', () => {
+      refreshResult();
+      window.open(resultBox.textContent, '_blank');
+    });
+
+    if (!hasTimerParams) {
+      builderCard.classList.remove('hidden');
+      timerCard.classList.add('hidden');
+      refreshResult();
     } else {
-      footerNote.textContent = 'Kein Klang hinterlegt.';
-    }
+      builderCard.classList.add('hidden');
+      timerCard.classList.remove('hidden');
 
-    bellAudio.addEventListener('error', () => {
-      footerNote.textContent = 'Ton konnte nicht geladen werden.';
-    });
+      const config = {
+        minMinutes: Math.max(1, parseInt(params.get('min') || '1', 10)),
+        maxMinutes: Math.max(5, parseInt(params.get('max') || '60', 10)),
+        defaultMinutes: Math.max(1, parseInt(params.get('minutes') || '10', 10)),
+        tickMs: 250,
+        audioSrc: params.get('audio') || 'bell.mp3',
+        autoplayBell: params.get('bell') !== 'off'
+      };
 
-    function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    }
+      config.defaultMinutes = Math.min(config.maxMinutes, Math.max(config.minMinutes, config.defaultMinutes));
 
-    function updateProgress() {
-      const progress = totalSeconds === 0 ? 0 : remainingSeconds / totalSeconds;
-      const dashOffset = circumference * (1 - progress);
-      progressCircle.style.strokeDashoffset = `${dashOffset}`;
-    }
+      const titleDisplay = document.getElementById('titleDisplay');
+      const timeDisplay = document.getElementById('timeDisplay');
+      const startPauseImg = document.getElementById('startPauseImg');
+      const minutesLabel = document.getElementById('minutesLabel');
+      const decreaseSmallBtn = document.getElementById('decreaseSmallBtn');
+      const decreaseBtn = document.getElementById('decreaseBtn');
+      const increaseBtn = document.getElementById('increaseBtn');
+      const increaseSmallBtn = document.getElementById('increaseSmallBtn');
+      const startPauseBtn = document.getElementById('startPauseBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const progressCircle = document.querySelector('.progress');
+      const bellAudio = document.getElementById('bellAudio');
+      const footerNote = document.getElementById('footerNote');
 
-    function updateTitleFromParams() {
-      const title = (params.get('title') || '').trim();
-      titleInput.value = title;
-    }
+      const radius = 44;
+      const circumference = 2 * Math.PI * radius;
+      progressCircle.style.strokeDasharray = `${circumference}`;
 
-    function updateMinutesLabel() {
-      const currentMinutes = Math.round(totalSeconds / 60);
-      minutesLabel.textContent = `${currentMinutes} min`;
-      const disabled = isRunning;
-      minutesLabel.classList.toggle('disabled', disabled);
+      let totalSeconds = config.defaultMinutes * 60;
+      let remainingSeconds = totalSeconds;
+      let isRunning = false;
+      let intervalId = null;
+      let endTime = null;
+      let audioUnlocked = false;
 
-      decreaseSmallBtn.disabled = disabled || currentMinutes <= config.minMinutes;
-      decreaseBtn.disabled = disabled || currentMinutes <= 5;
-      increaseBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
-      increaseSmallBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
+      titleDisplay.textContent = (params.get('title') || '').trim() || 'Timer';
 
-      decreaseSmallBtn.classList.toggle('disabled', decreaseSmallBtn.disabled);
-      decreaseBtn.classList.toggle('disabled', decreaseBtn.disabled);
-      increaseBtn.classList.toggle('disabled', increaseBtn.disabled);
-      increaseSmallBtn.classList.toggle('disabled', increaseSmallBtn.disabled);
-    }
-
-    function setPlayIcon() {
-      startPauseImg.src = 'SoundPlayIcon-11.svg';
-    }
-
-    function setPauseIcon() {
-      startPauseImg.src = 'pause-icon.svg';
-    }
-
-    function render() {
-      timeDisplay.textContent = formatTime(remainingSeconds);
-      updateProgress();
-      updateMinutesLabel();
-      if (isRunning) {
-        setPauseIcon();
-      } else {
-        setPlayIcon();
-      }
-    }
-
-    async function unlockAudio() {
-      if (!config.audioSrc || audioUnlocked) return;
-      try {
-        bellAudio.muted = true;
-        bellAudio.currentTime = 0;
-        const playPromise = bellAudio.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-          bellAudio.pause();
-          bellAudio.currentTime = 0;
-        }
-        bellAudio.muted = false;
-        audioUnlocked = true;
-      } catch (error) {
-        bellAudio.muted = false;
+      if (config.audioSrc) {
+        bellAudio.src = config.audioSrc;
         bellAudio.load();
-        console.warn('Audio konnte nicht vorinitialisiert werden:', error);
-      }
-    }
-
-    async function ringBell() {
-      if (!config.audioSrc || !config.autoplayBell) return;
-      try {
-        bellAudio.pause();
-        bellAudio.muted = false;
-        bellAudio.currentTime = 0;
-        await bellAudio.play();
         footerNote.textContent = '';
-      } catch (error) {
-        footerNote.textContent = 'Ton wurde vom Browser blockiert.';
-        console.warn('Audio konnte nicht abgespielt werden:', error);
-      }
-    }
-
-    function stopTimer() {
-      isRunning = false;
-      endTime = null;
-      if (intervalId) {
-        clearInterval(intervalId);
-        intervalId = null;
-      }
-      render();
-    }
-
-    function resetTimer() {
-      stopTimer();
-      remainingSeconds = totalSeconds;
-      progressCircle.style.transition = 'none';
-      updateProgress();
-      requestAnimationFrame(() => {
-        progressCircle.style.transition = 'stroke-dashoffset 0.95s linear';
-        render();
-      });
-    }
-
-    function finishTimer() {
-      remainingSeconds = 0;
-      stopTimer();
-      render();
-      ringBell();
-    }
-
-    function tick() {
-      const now = Date.now();
-      const secondsLeft = Math.max(0, Math.ceil((endTime - now) / 1000));
-      remainingSeconds = secondsLeft;
-      render();
-      if (secondsLeft <= 0) {
-        finishTimer();
-      }
-    }
-
-    function startTimer() {
-      if (remainingSeconds <= 0) {
-        remainingSeconds = totalSeconds;
-      }
-
-      isRunning = true;
-      endTime = Date.now() + remainingSeconds * 1000;
-      tick();
-      intervalId = setInterval(tick, config.tickMs);
-      render();
-    }
-
-    async function toggleTimer() {
-      if (isRunning) {
-        stopTimer();
       } else {
-        await unlockAudio();
-        startTimer();
+        footerNote.textContent = 'Kein Klang hinterlegt.';
       }
-    }
 
-    function changeMinutes(delta) {
-      if (isRunning) return;
-      const currentMinutes = Math.round(totalSeconds / 60);
-      const nextMinutes = Math.min(config.maxMinutes, Math.max(config.minMinutes, currentMinutes + delta));
-      totalSeconds = nextMinutes * 60;
-      remainingSeconds = totalSeconds;
+      bellAudio.addEventListener('error', () => {
+        footerNote.textContent = 'Ton konnte nicht geladen werden.';
+      });
+
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      function updateProgress() {
+        const progress = totalSeconds === 0 ? 0 : remainingSeconds / totalSeconds;
+        const dashOffset = circumference * (1 - progress);
+        progressCircle.style.strokeDashoffset = `${dashOffset}`;
+      }
+
+      function updateMinutesLabel() {
+        const currentMinutes = Math.round(totalSeconds / 60);
+        minutesLabel.textContent = `${currentMinutes} min`;
+        const disabled = isRunning;
+        minutesLabel.classList.toggle('disabled', disabled);
+
+        decreaseSmallBtn.disabled = disabled || currentMinutes <= config.minMinutes;
+        decreaseBtn.disabled = disabled || currentMinutes <= 5;
+        increaseBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
+        increaseSmallBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
+
+        decreaseSmallBtn.classList.toggle('disabled', decreaseSmallBtn.disabled);
+        decreaseBtn.classList.toggle('disabled', decreaseBtn.disabled);
+        increaseBtn.classList.toggle('disabled', increaseBtn.disabled);
+        increaseSmallBtn.classList.toggle('disabled', increaseSmallBtn.disabled);
+      }
+
+      function setPlayIcon() {
+        startPauseImg.src = 'SoundPlayIcon-11.svg';
+      }
+
+      function setPauseIcon() {
+        startPauseImg.src = 'pause-icon.svg';
+      }
+
+      function render() {
+        timeDisplay.textContent = formatTime(remainingSeconds);
+        updateProgress();
+        updateMinutesLabel();
+        if (isRunning) {
+          setPauseIcon();
+        } else {
+          setPlayIcon();
+        }
+      }
+
+      async function unlockAudio() {
+        if (!config.audioSrc || audioUnlocked) return;
+        try {
+          bellAudio.muted = true;
+          bellAudio.currentTime = 0;
+          const playPromise = bellAudio.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+            bellAudio.pause();
+            bellAudio.currentTime = 0;
+          }
+          bellAudio.muted = false;
+          audioUnlocked = true;
+        } catch (error) {
+          bellAudio.muted = false;
+          bellAudio.load();
+          console.warn('Audio konnte nicht vorinitialisiert werden:', error);
+        }
+      }
+
+      async function ringBell() {
+        if (!config.audioSrc || !config.autoplayBell) return;
+        try {
+          bellAudio.pause();
+          bellAudio.muted = false;
+          bellAudio.currentTime = 0;
+          await bellAudio.play();
+          footerNote.textContent = '';
+        } catch (error) {
+          footerNote.textContent = 'Ton wurde vom Browser blockiert.';
+          console.warn('Audio konnte nicht abgespielt werden:', error);
+        }
+      }
+
+      function stopTimer() {
+        isRunning = false;
+        endTime = null;
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+        render();
+      }
+
+      function resetTimer() {
+        stopTimer();
+        remainingSeconds = totalSeconds;
+        progressCircle.style.transition = 'none';
+        updateProgress();
+        requestAnimationFrame(() => {
+          progressCircle.style.transition = 'stroke-dashoffset 0.95s linear';
+          render();
+        });
+      }
+
+      function finishTimer() {
+        remainingSeconds = 0;
+        stopTimer();
+        render();
+        ringBell();
+      }
+
+      function tick() {
+        const now = Date.now();
+        const secondsLeft = Math.max(0, Math.ceil((endTime - now) / 1000));
+        remainingSeconds = secondsLeft;
+        render();
+        if (secondsLeft <= 0) {
+          finishTimer();
+        }
+      }
+
+      function startTimer() {
+        if (remainingSeconds <= 0) {
+          remainingSeconds = totalSeconds;
+        }
+
+        isRunning = true;
+        endTime = Date.now() + remainingSeconds * 1000;
+        tick();
+        intervalId = setInterval(tick, config.tickMs);
+        render();
+      }
+
+      async function toggleTimer() {
+        if (isRunning) {
+          stopTimer();
+        } else {
+          await unlockAudio();
+          startTimer();
+        }
+      }
+
+      function changeMinutes(delta) {
+        if (isRunning) return;
+        const currentMinutes = Math.round(totalSeconds / 60);
+        const nextMinutes = Math.min(config.maxMinutes, Math.max(config.minMinutes, currentMinutes + delta));
+        totalSeconds = nextMinutes * 60;
+        remainingSeconds = totalSeconds;
+        render();
+      }
+
+      startPauseBtn.addEventListener('click', toggleTimer);
+      resetBtn.addEventListener('click', resetTimer);
+      decreaseSmallBtn.addEventListener('click', () => changeMinutes(-1));
+      decreaseBtn.addEventListener('click', () => changeMinutes(-5));
+      increaseBtn.addEventListener('click', () => changeMinutes(5));
+      increaseSmallBtn.addEventListener('click', () => changeMinutes(1));
+
+      document.addEventListener('visibilitychange', () => {
+        if (!isRunning || !endTime) return;
+        if (!document.hidden) {
+          tick();
+        }
+      });
+
       render();
     }
-
-    startPauseBtn.addEventListener('click', toggleTimer);
-    resetBtn.addEventListener('click', resetTimer);
-    decreaseSmallBtn.addEventListener('click', () => changeMinutes(-1));
-    decreaseBtn.addEventListener('click', () => changeMinutes(-5));
-    increaseBtn.addEventListener('click', () => changeMinutes(5));
-    increaseSmallBtn.addEventListener('click', () => changeMinutes(1));
-
-    document.addEventListener('visibilitychange', () => {
-      if (!isRunning || !endTime) return;
-      if (!document.hidden) {
-        tick();
-      }
-    });
-
-    updateTitleFromParams();
-    render();
   </script>
 </body>
 </html>
