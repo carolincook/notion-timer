@@ -121,6 +121,26 @@
       width: 100%;
     }
 
+    .builder-grid.compact {
+      grid-template-columns: minmax(0, 2.2fr) minmax(140px, 1fr);
+      gap: 16px;
+      align-items: end;
+    }
+
+    .result-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: 16px;
+      width: 100%;
+      align-items: start;
+    }
+
+    .builder-actions.side {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
     .builder-actions {
       display: flex;
       gap: 12px;
@@ -159,20 +179,20 @@
 
     .result-box {
       width: 100%;
-      min-height: 88px;
+      min-height: 114px;
       border: 1px solid #d9d9d9;
       border-radius: 16px;
       background: #fff;
-      padding: 12px 14px;
+      padding: 14px 16px;
       font-size: 14px;
-      line-height: 1.5;
+      line-height: 1.55;
       overflow-wrap: anywhere;
     }
 
     .result-hint {
       font-size: 12px;
       color: #6f6f6f;
-      margin-top: -6px;
+      margin-top: -4px;
     }
 
     .timer-title {
@@ -350,6 +370,19 @@
         grid-template-columns: 1fr;
       }
 
+      .builder-grid.compact,
+      .result-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .builder-actions.side {
+         width: 100%;
+      }
+
+      .builder-button {
+        width: 100%;
+      }
+
       .builder-title {
         font-size: 24px;
       }
@@ -425,7 +458,7 @@
     </div>
 
 <div class="result-hint">Tipp: Diesen Link kannst du speichern und immer wieder in deine Notion-Vorlagen einsetzen.</div>
-
+    </div>
   <div class="card hidden" id="timerCard">
     <div class="timer-title" id="titleDisplay"></div>
 
@@ -489,8 +522,9 @@
     const builderTitle = document.getElementById('builderTitle');
     const builderMinutes = document.getElementById('builderMinutes');
     const resultBox = document.getElementById('resultBox');
-    const generateBtn = document.getElementById('generateBtn');
     const copyBtn = document.getElementById('copyBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    
     builderTitle.addEventListener('input', refreshResult);
     builderMinutes.addEventListener('input', refreshResult);
 
@@ -511,7 +545,6 @@
       resultBox.textContent = buildTimerUrl();
     }
 
-    generateBtn.addEventListener('click', refreshResult);
     copyBtn.addEventListener('click', async () => {
       refreshResult();
       try {
@@ -552,7 +585,6 @@
 
       config.defaultMinutes = Math.min(config.maxMinutes, Math.max(config.minMinutes, config.defaultMinutes));
 
-      const title = (builderTitle.value || 'Timer').trim();
       const titleDisplay = document.getElementById('titleDisplay');
       const timeDisplay = document.getElementById('timeDisplay');
       const startPauseImg = document.getElementById('startPauseImg');
