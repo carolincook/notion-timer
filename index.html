@@ -307,7 +307,7 @@
     <div class="footer-note" id="footerNote"></div>
   </div>
 
-  <audio id="bellAudio" preload="auto"></audio>
+  <audio id="bellAudio" preload="auto" playsinline></audio>
 
   <script>
     const params = new URLSearchParams(window.location.search);
@@ -349,13 +349,19 @@
     let isRunning = false;
     let intervalId = null;
     let endTime = null;
+    let audioUnlocked = false;
 
     if (config.audioSrc) {
       bellAudio.src = config.audioSrc;
+      bellAudio.load();
       footerNote.textContent = '';
     } else {
       footerNote.textContent = 'Kein Klang hinterlegt.';
     }
+
+    bellAudio.addEventListener('error', () => {
+      footerNote.textContent = 'Ton konnte nicht geladen werden.';
+    });
 
     function formatTime(seconds) {
       const mins = Math.floor(seconds / 60);
@@ -410,12 +416,36 @@
       }
     }
 
+    async function unlockAudio() {
+      if (!config.audioSrc || audioUnlocked) return;
+      try {
+        bellAudio.muted = true;
+        bellAudio.currentTime = 0;
+        const playPromise = bellAudio.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          bellAudio.pause();
+          bellAudio.currentTime = 0;
+        }
+        bellAudio.muted = false;
+        audioUnlocked = true;
+      } catch (error) {
+        bellAudio.muted = false;
+        bellAudio.load();
+        console.warn('Audio konnte nicht vorinitialisiert werden:', error);
+      }
+    }
+
     async function ringBell() {
       if (!config.audioSrc || !config.autoplayBell) return;
       try {
+        bellAudio.pause();
+        bellAudio.muted = false;
         bellAudio.currentTime = 0;
         await bellAudio.play();
+        footerNote.textContent = '';
       } catch (error) {
+        footerNote.textContent = 'Ton wurde vom Browser blockiert.';
         console.warn('Audio konnte nicht abgespielt werden:', error);
       }
     }
@@ -470,10 +500,11 @@
       render();
     }
 
-    function toggleTimer() {
+    async function toggleTimer() {
       if (isRunning) {
         stopTimer();
       } else {
+        await unlockAudio();
         startTimer();
       }
     }
