@@ -505,59 +505,56 @@
       <div class="card" id="timerCard">
         <div class="timer-title" id="titleDisplay"></div>
 
-        <!-- HIER bleibt dein kompletter Timer-Code drin -->
+        <div class="circle-wrap" aria-live="polite">
+          <svg class="circle-svg" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="track" cx="50" cy="50" r="44"></circle>
+            <circle class="progress" cx="50" cy="50" r="44"></circle>
+          </svg>
+          <div class="time" id="timeDisplay">10:00</div>
+        </div>
+
+        <div class="minutes-row">
+          <button class="icon-button tiny" id="decreaseSmallBtn" type="button" aria-label="1 Minute weniger">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
+            </svg>
+          </button>
+
+          <button class="icon-button small" id="decreaseBtn" type="button" aria-label="5 Minuten weniger">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
+            </svg>
+          </button>
+
+          <div class="minutes-label" id="minutesLabel">10 min</div>
+
+          <button class="icon-button small" id="increaseBtn" type="button" aria-label="5 Minuten mehr">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
+            </svg>
+          </button>
+
+          <button class="icon-button tiny" id="increaseSmallBtn" type="button" aria-label="1 Minute mehr">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="controls">
+          <button class="icon-button" id="startPauseBtn" type="button" aria-label="Start oder Pause">
+            <img id="startPauseImg" class="button-icon-img" src="SoundPlayIcon-11.svg" alt="" aria-hidden="true" />
+          </button>
+
+          <button class="icon-button" id="resetBtn" type="button" aria-label="Zurücksetzen">
+            <img class="button-icon-img" src="SoundPlayIcon-4.svg" alt="" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div class="footer-note" id="footerNote"></div>
       </div>
     </div>
 
-  </div>
-
-    <div class="circle-wrap" aria-live="polite">
-      <svg class="circle-svg" viewBox="0 0 100 100" aria-hidden="true">
-        <circle class="track" cx="50" cy="50" r="44"></circle>
-        <circle class="progress" cx="50" cy="50" r="44"></circle>
-      </svg>
-      <div class="time" id="timeDisplay">10:00</div>
-    </div>
-
-    <div class="minutes-row">
-      <button class="icon-button tiny" id="decreaseSmallBtn" type="button" aria-label="1 Minute weniger">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
-        </svg>
-      </button>
-
-      <button class="icon-button small" id="decreaseBtn" type="button" aria-label="5 Minuten weniger">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
-        </svg>
-      </button>
-
-      <div class="minutes-label" id="minutesLabel">10 min</div>
-
-      <button class="icon-button small" id="increaseBtn" type="button" aria-label="5 Minuten mehr">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
-        </svg>
-      </button>
-
-      <button class="icon-button tiny" id="increaseSmallBtn" type="button" aria-label="1 Minute mehr">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
-        </svg>
-      </button>
-    </div>
-
-    <div class="controls">
-      <button class="icon-button" id="startPauseBtn" type="button" aria-label="Start oder Pause">
-        <img id="startPauseImg" class="button-icon-img" src="SoundPlayIcon-11.svg" alt="" aria-hidden="true" />
-      </button>
-
-      <button class="icon-button" id="resetBtn" type="button" aria-label="Zurücksetzen">
-        <img class="button-icon-img" src="SoundPlayIcon-4.svg" alt="" aria-hidden="true" />
-      </button>
-    </div>
-
-    <div class="footer-note" id="footerNote"></div>
   </div>
 
   <audio id="bellAudio" preload="auto" playsinline></audio>
