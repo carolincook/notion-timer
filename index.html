@@ -307,7 +307,7 @@
     const params = new URLSearchParams(window.location.search);
 
     const config = {
-      minMinutes: Math.max(5, parseInt(params.get('min') || '5', 10)),
+      minMinutes: Math.max(1, parseInt(params.get('min') || '1', 10)),
       maxMinutes: Math.max(5, parseInt(params.get('max') || '60', 10)),
       defaultMinutes: Math.max(5, parseInt(params.get('minutes') || '10', 10)),
       tickMs: 250,
@@ -376,7 +376,7 @@
       const disabled = isRunning;
       minutesLabel.classList.toggle('disabled', disabled);
       decreaseSmallBtn.disabled = disabled || currentMinutes <= config.minMinutes;
-      decreaseBtn.disabled = disabled || currentMinutes <= config.minMinutes;
+      decreaseBtn.disabled = disabled || currentMinutes <= 5;
       increaseBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
       increaseSmallBtn.disabled = disabled || currentMinutes >= config.maxMinutes;
       decreaseSmallBtn.classList.toggle('disabled', decreaseSmallBtn.disabled);
